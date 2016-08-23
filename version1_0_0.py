@@ -31,7 +31,7 @@ label3.grid(row=2, column=1)
 label4 = Label(root, text = str(matrix[count][15]))
 label4.grid(row=3, column=1)
 
-def AccidentReport(count):
+def AccidentReport(count, response):
     carID = str(matrix[count][1])
     accidentdata = matrix[count][2]
     hour = int(matrix[count][3]) / 10000
@@ -42,7 +42,7 @@ def AccidentReport(count):
     try:
         with connection.cursor() as cursor:
         # Create a new record
-            sql="INSERT INTO acc(CarID, AccDate, AccHour, AccMinute, AccSeconds,OppositeValue, AccLatitude, AccLongitude,Road, City, Town, ModelYear, ModelCode,report) VALUES('"+carID+"','"+accidentdata+"','"+str(hour)+"','"+str(minute)+"','"+str(second)+"','jjjjj','"+matrix[count][5]+"','"+matrix[count][6]+"','"+matrix[count][11]+"','"+matrix[count][9]+"','"+matrix[count][10]+"','"+matrix[count][13]+"','"+matrix[count][14]+"','yes')"
+            sql="INSERT INTO acc(CarID, AccDate, AccHour, AccMinute, AccSeconds,OppositeValue, AccLatitude, AccLongitude,Road, City, Town, ModelYear, ModelCode,report) VALUES('"+carID+"','"+accidentdata+"','"+str(hour)+"','"+str(minute)+"','"+str(second)+"','jjjjj','"+matrix[count][5]+"','"+matrix[count][6]+"','"+matrix[count][11]+"','"+matrix[count][9]+"','"+matrix[count][10]+"','"+matrix[count][13]+"','"+matrix[count][14]+"','"+response+')"
             cursor.execute(sql)
             # connection is not autocommit by default. So you must commit to save
             # your changes.
@@ -55,11 +55,11 @@ def messagebox(impulse, count):
     if impulse > 0:
             answer = tkMessageBox.askquestion('Accident Report', 'Do you want to report this accident?')
             if answer == 'yes':
-                print AccidentReport(count)
+                AccidentReport(count, 'YES')
             else:
                 answer_repeatly = tkMessageBox.askquestion('Hit And Run??', 'Do not you want to report this accident? \n If you choose yes, you may be suspected as Hit And Run!!')
                 if answer_repeatly == 'yes' :
-                    print 'hit and run'
+                    AccidentReport(count, 'NO')
                 else:
                     messagebox(impulse,count)
     
