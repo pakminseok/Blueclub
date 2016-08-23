@@ -3,8 +3,8 @@ import time
 import csv
 import Tkinter
 import tkMessageBox
-from sql import *
-
+#from sql import *
+import pymysql.cursors
 matrix = []
  
 f= open('carA.log.csv', 'r')
@@ -32,15 +32,23 @@ label4 = Label(root, text = str(matrix[count][15]))
 label4.grid(row=3, column=1)
 
 def AccidentReport(count):
-    acc=Table('acc')
-    carID = matrix[count][1]
+    carID = str(matrix[count][1])
     accidentdata = matrix[count][2]
     hour = int(matrix[count][3]) / 10000
-    minute =int(matrix[count][3]) - (hour*10000) / 100
-    second = int(matrix[count][4])+(int(matrix[count][3]) - (hour*10000) - (minute*100))
+    minute =(int(matrix[count][3]) - hour*10000)/ 100
+    second = int(matrix[count][4])+int(matrix[count][3]) - (hour*10000) - (minute*100)
 
-    tuple(acc.insert(columns=[acc.CarID, acc.AccDate, acc.AccHour, acc.AccMinute, acc.AccSeconds, acc.OppositeValue, acc.AccLatitude, acc.AccLongitude, acc.Road, acc.RoadSlope, acc.City, acc.Town, acc.ModelYear, acc.ModelCode, acc.report],values=[[carID, accidentdata, hour, minute, second, matrix[count][5], matrix[count][6], matrix[count][11], matrix[count][12], matrix[count][9], matrix[count][10], matrix[count][13], matrix[count][14], 'yes']]))
-    
+    connection = pymysql.connect(host='127.0.0.1', user='root', password='apmsetup', db='hackathon', cursorclass=pymysql.cursors.DictCursor)
+    try:
+        with connection.cursor() as cursor:
+        # Create a new record
+            sql="INSERT INTO acc(CarID, AccDate, AccHour, AccMinute, AccSeconds,OppositeValue, AccLatitude, AccLongitude,Road, City, Town, ModelYear, ModelCode,report) VALUES('"+carID+"','"+accidentdata+"','"+str(hour)+"','"+str(minute)+"','"+str(second)+"','jjjjj','"+matrix[count][5]+"','"+matrix[count][6]+"','"+matrix[count][11]+"','"+matrix[count][9]+"','"+matrix[count][10]+"','"+matrix[count][13]+"','"+matrix[count][14]+"','yes')"
+            cursor.execute(sql)
+            # connection is not autocommit by default. So you must commit to save
+            # your changes.
+        connection.commit()
+    finally:
+        connection.close()
 
 
 def messagebox(impulse, count):
